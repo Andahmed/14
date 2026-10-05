@@ -1,0 +1,21 @@
+[EDIT-MAP] المرحلة 3: استلام فرع (pickup)  — OrderType='A' / SType='pickup'
+server.py:
+  - ins_sale()            : SType=pickup => OrderType=A + رسوم التوصيل = 0 (حتى لو الصفحة بعتتها)
+  - row_to_sale()         : cust (اسم/تليفون) بيرجع للدليفري والـ pickup
+  - delivery_dispatch()   : بيرفض أي أوردر pickup (يتخطى Dispatch بالكامل)
+  - do_edit()             : pickup بيحتفظ بالاسم/التليفون والرسوم صفر
+  - mark_delivered()      : (موجودة من قبل) التسليم بيسجّل EmpNo = الكاشير اللي سلّم + OrderState=F + PayPlace=A
+pos_istakoza.html:
+  - زرار الوضع  mPick  + goPickup() + setMode('pickup')  (الاسم والتليفون اختياري، من غير عنوان ولا رسوم)
+  - تاب "استلام فرع" في مجموعة TABS.ords  => pickModal / openPickup() / renderPickup() / pickDeliver()
+  - ألوان الوقت: pkLvl()  أخضر < cfg.pkYel (10 د) | أصفر < cfg.pkRed (20 د) | أحمر بعد كده
+  - typeIc()/typeTx() : تسمية النوع (كاشير/دليفري/استلام فرع) في الرسيت والأوردرات
+  - قفل اليوم: تحذير لو فيه pickup لسه ما اتسلّمش + سطر في ملخص القفل
+  - SSE: حدث 'deliver' بيشيل الأوردر من شاشة الكاشيرات التانية فوراً
+
+── شاشة الموظفين (تحديث) ──
+server.py: login() / list_jobs() / list_users() / save_user() / NAME_RE / gen_pw()  |  GET /api/jobs
+pos_istakoza.html: renderUsers() / userAdd() / userEdit() / userPw() / userDel()
+- الدخول بكود الموظف (EmpNo) أو اسم الدخول القديم (admin)
+- UName بقى داخلي = EmpNo للموظفين الجداد، مفيش حقل ليه في الفورم
+- الباسورد تلقائي (6 أرقام) لو الحقل فاضي، بيظهر مرة واحدة بعد الحفظ
