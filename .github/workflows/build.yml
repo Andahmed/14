@@ -1,0 +1,48 @@
+name: Build Istakoza POS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Python 3.11.9 embeddable
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip" -OutFile "py.zip"
+          Expand-Archive -Path "py.zip" -DestinationPath "py" -Force
+          Remove-Item "py.zip"
+
+      - name: Install NSIS
+        shell: pwsh
+        run: |
+          choco install nsis -y --no-progress
+
+      - name: Build
+        shell: cmd
+        run: build.bat
+
+      - name: Upload Cashier ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: IstakozaPOS_Cashier
+          path: dist/IstakozaPOS_Cashier_v12.zip
+
+      - name: Upload Backoffice ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: IstakozaPOS_Backoffice
+          path: dist/IstakozaPOS_Backoffice_v12.zip
+
+      - name: Upload Installer EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: IstakozaPOS_Setup
+          path: dist/IstakozaPOS_Setup_64bit.exe
+          if-no-files-found: ignore
